@@ -1,7 +1,7 @@
 function fibonacci(n: number): number {
-    return 42
+    if (n < 2) return n
+    return fibonacci(n-1) + fibonacci(n-2)
 }
-
 
 console.log("fibonacci :")
 console.log("expected output F 0 (0) :", fibonacci(0));
