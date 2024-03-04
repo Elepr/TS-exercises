@@ -1,5 +1,6 @@
 function recursiveFactorial(n: number): number {
-    return 42
+    if (n == 0) return 1
+    return n * recursiveFactorial(n-1)
 }
 
 
