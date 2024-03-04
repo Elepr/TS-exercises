@@ -1,7 +1,11 @@
 function squareRoot(n: number): number {
-    return 42
-}
+    let root = 0
 
+    for (let i = 1; i * i <= n; i++) {
+        if (i * i == n) root = i
+    }
+    return root
+}
 
 console.log("squareRoot :")
 console.log("expected output (1) :", squareRoot(1));
