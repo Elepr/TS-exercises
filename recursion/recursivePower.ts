@@ -1,7 +1,7 @@
 function recursivePower(n: number, power: number): number {
-    return 42
+    if (power == 0) return 1
+    return n * recursivePower(n, power-1)
 }
-
 
 console.log("recursivePower :")
 console.log("expected output (1) :", recursivePower(2, 0));
