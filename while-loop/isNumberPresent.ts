@@ -1,5 +1,10 @@
 function isNumberPresent(numbers: number[], n: number): boolean {
-    return true
+    let i = 0
+    while (i < numbers.length) {
+        if (numbers[i] == n) return true
+        i++
+    }
+    return false
 }
 
 
