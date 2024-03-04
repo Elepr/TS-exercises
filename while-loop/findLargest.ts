@@ -1,5 +1,12 @@
 function findLargest(numbers: number[]): number {
-    return 42
+    let largest = numbers[0]
+
+    let i = 0
+    while (i < numbers.length) {
+        if (largest < numbers[i]) largest = numbers[i]
+        i++
+    }
+    return largest
 }
 
 
