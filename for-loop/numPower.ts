@@ -1,5 +1,10 @@
 function numPower(n: number, power: number): number {
-    return 42
+    let result = 1
+
+    for (let i = 0; i < power; i ++) {
+        result*= n
+    }
+    return result
 }
 
 console.log("numPower :")
