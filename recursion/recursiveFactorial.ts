@@ -3,7 +3,6 @@ function recursiveFactorial(n: number): number {
     return n * recursiveFactorial(n-1)
 }
 
-
 console.log("recursiveFactorial :")
 console.log("expected output (1) :", recursiveFactorial(0));
 console.log("expected output (1) :", recursiveFactorial(1));
