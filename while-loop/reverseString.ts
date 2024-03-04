@@ -1,5 +1,12 @@
 function reverseString(str: string): string {
-    return '42'
+    let reversedStr = ""
+
+    let i = str.length -1
+    while (i >= 0) {
+        reversedStr += str[i]
+        i--
+    }
+    return reversedStr
 }
 
 console.log("reverseString :")
