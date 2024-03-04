@@ -1,5 +1,10 @@
 function iterativeFactorial(n: number): number {
-    return 42
+    let result = 1
+
+    for (let i = n; i > 0; i--) {
+        result *= i
+    }
+    return result
 }
 
 console.log("iterativeFactorial :")
