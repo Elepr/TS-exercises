@@ -1,7 +1,8 @@
 function findNextPrime(n: number): number {
-    return 42
+    for (; isPrime(n) == false; n++) {}
+    return n
 }
-
+import {isPrime} from "./isPrime"
 
 console.log("findNextPrime :")
 console.log("expected output (2) :", findNextPrime(0));
