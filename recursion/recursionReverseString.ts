@@ -1,6 +1,6 @@
 function recursionReverseString(str: string): string {
     if (str == '') return ''
-    return recursionReverseString(str.substring(1)) + str.charAt(0) 
+    return recursionReverseString(str.substring(1)) + str.charAt(0)
 }
 
 console.log("recursionReverseString :")
