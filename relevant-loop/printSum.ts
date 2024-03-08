@@ -21,7 +21,7 @@ console.log("printSum :")
 printSumOf([10, 5, 3]);
 // expected output : 18
 
-function printSumReduce(numbers: number[]): void { //this is my favorit method, just 2 line, is clear and give the code more reading and compact
+function printSumReduce(numbers: number[]): void { //this is my favorit method, just 2 line, is clear, makes the code more reading and compact
     let result = numbers.reduce((a, b) => a + b)
     console.log(result)
 }

@@ -1,4 +1,4 @@
-function sumArrays(arr1: number[], arr2: number[]): number[] {
+function sumArrays(arr1: number[], arr2: number[]): number[] { // it's the  most solution
     let result: number[] = []
     if (arr1.length != arr2.length) return result
 
