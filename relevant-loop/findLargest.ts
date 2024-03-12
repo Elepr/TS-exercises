@@ -1,14 +1,14 @@
 function findLargest(numbers: number[]): number {
     let largest = numbers[0]
 
-    for (let i = 1; i < numbers.length; i ++) {
+    for (let i = 1; i < numbers.length; i++) {
         if (numbers[i] > largest) largest = numbers[i]
     }
     return largest
 }
 
 // function findLargest(numbers: number[]): number { // this method may cause the number of arguments supported by the Javascript engine to reach the threshold limit.
-    // return Math.max(...numbers)
+//     return Math.max(...numbers)
 // }
 
 // function findLargest(numbers: number[]): number { // this method does not have the constraint of Math.max(...argumtent)

@@ -8,7 +8,7 @@ function cmpArrays(arr1: number[], arr2: number[]): boolean {
 }
 
 // function cmpArrays(arr1: number[], arr2: number[]): boolean {
-//     return arr1.toString() != arr2.toString() ? false : true
+//     return arr1.toString() == arr2.toString()
 // }
 
 console.log("cmpArrays :")

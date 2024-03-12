@@ -1,8 +1,8 @@
 function isLetterPresent(str: string, letter: string): boolean {
-    let regex = /^[a-zA-Z]$/
+    const regex = /^[a-zA-Z]$/
 
     if (regex.test(letter)) {
-        for (let i of str) {
+        for (const i of str) {
             if (i == letter) return true
         }
     }
