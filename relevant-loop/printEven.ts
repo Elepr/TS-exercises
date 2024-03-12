@@ -1,6 +1,6 @@
-function printEven(numbers: number[]): void {
-    for (let i = 0; i < numbers.length; i++) {
-        if (numbers[i] % 2 == 0) console.log(numbers[i])
+function printEven(numbers: number[]): void {  // I prefer this on my first for loop, in globality is the same but I think this is more clear
+    for (let n of numbers) {
+        if (n % 2 == 0) console.log(n)
     }
 }
 

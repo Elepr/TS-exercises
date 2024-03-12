@@ -1,11 +1,6 @@
-function sumArrays(arr1: number[], arr2: number[]): number[] { // it's the  most solution
-    let result: number[] = []
-    if (arr1.length != arr2.length) return result
-
-    for (let i = 0; i < arr1.length; i++) {
-        result[i] = arr1[i] + arr2[i]
-    }
-    return result
+function sumArrays(arr1: number[], arr2: number[]): number[] {
+   if (arr1.length != arr2.length) return []
+    return arr1.map((n, i) => n + arr2[i])
 }
 
 console.log("sumArrays :")

@@ -7,6 +7,10 @@ function cmpArrays(arr1: number[], arr2: number[]): boolean {
     return true
 }
 
+// function cmpArrays(arr1: number[], arr2: number[]): boolean {
+//     return arr1.toString() != arr2.toString() ? false : true
+// }
+
 console.log("cmpArrays :")
 console.log("expected output true :", cmpArrays([0], [0]));
 console.log("expected output true :", cmpArrays([12, 7, 5], [12, 7, 5]));
