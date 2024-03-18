@@ -1,6 +1,6 @@
 function recPrintReverseCount(n: number): void {
-    console.log(n)
-    if (n > 0) recPrintReverseCount(n-1)
+	console.log(n)
+	if (n > 0) recPrintReverseCount(n-1)
 }
 
 console.log("recPrintReverseCount :")

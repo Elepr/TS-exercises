@@ -1,6 +1,6 @@
 function recPrintCount(n: number): void {
-    if (n > 0) recPrintCount(n-1)
-    console.log(n)
+	if (n > 0) recPrintCount(n-1)
+	console.log(n)
 }
 
 console.log("recPrintCount :")
