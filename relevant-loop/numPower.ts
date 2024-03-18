@@ -1,10 +1,10 @@
 function numPower(n: number, power: number): number {
-    let result = 1
+	let result = 1
 
-    for (let i = 0; i < power; i++) {
-        result *= n
-    }
-    return result
+	for (let i = 0; i < power; i++) {
+		result *= n
+	}
+	return result
 }
 
 // function numPower(n: number, power: number): number {
@@ -16,7 +16,7 @@ function numPower(n: number, power: number): number {
 // }
 
 console.log("numPower :")
-console.log("expected output (1) :", numPower(2, 0));
-console.log("expected output (1) :", numPower(34, 0));
-console.log("expected output (64) :", numPower(2, 6));
-console.log("expected output (10578455953408) :", numPower(28, 9));
+console.log("expected output (1) :", numPower(2, 0))
+console.log("expected output (1) :", numPower(34, 0))
+console.log("expected output (64) :", numPower(2, 6))
+console.log("expected output (10578455953408) :", numPower(28, 9))

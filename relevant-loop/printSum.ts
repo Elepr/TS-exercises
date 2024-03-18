@@ -1,5 +1,5 @@
 function printSum(numbers: number[]): void { //this is my favorit method, just 2 line, is clear, makes the code more reading and compact
-    console.log(numbers.reduce((accumulator, currentElement) => accumulator + currentElement))
+	console.log(numbers.reduce((accumulator, currentElement) => accumulator + currentElement))
 }
 
 // function printSum(numbers: number[]): void { //here, we have one less line compared a for loop
@@ -18,5 +18,5 @@ function printSum(numbers: number[]): void { //this is my favorit method, just 2
 // }
 
 console.log("printSum :")
-printSum([10, 5, 3]);
+printSum([10, 5, 3])
 // expected output : 18
