@@ -6,7 +6,7 @@ export function isPrime(n: number): boolean {
 	return true
 }
 
-if (typeof module !== "undefined" && !module.parent) {
+function main() {
 	console.log("isPrime :")
 	console.log("expected output (false) :", isPrime(0))
 	console.log("expected output (false) :", isPrime(1))
@@ -18,6 +18,8 @@ if (typeof module !== "undefined" && !module.parent) {
 	console.log("expected output (true) :", isPrime(89))
 	console.log("expected output (false) :", isPrime(128))
 	console.log("expected output (true) :", isPrime(9576890767))
-	console.log("expected output (true) :",
-		isPrime(9576890767))
+}
+
+if (typeof module !== "undefined" && !module.parent) {
+	main()
 }
