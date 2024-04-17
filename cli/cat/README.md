@@ -1,17 +1,10 @@
-$> ./myCat file1
-    file1Content
-
-$> ./myCat file1 file2
-    file1Content
-    file2Content
-
-$> ./myCat file1 file1 file1
-    file1Content
-    file1Content
-    file1Content
-
-$> ./myCat directory1
-    error: myCat: directory1: Is a directory
-
-$> ./myCat
-    error: you must pass at least one file as parameter
+#Hello everyone
+##Here we've implemented the cat function.
+###This exercise has allowed us to see different notions:
+1. Interactions with the **file system**.
+2. Permissions and the **chmod** **command**.
+3. Shebang
+4. The **path**
+5. **Node** and its **modules**.
+6. Codes** and **errors**.
+7. The different **entries** and **outputs**.
