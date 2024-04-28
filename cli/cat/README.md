@@ -1,6 +1,6 @@
-# Hello everyone
-## Here we've implemented the cat function.
-### This exercise has allowed us to see different notions:
+# myCat
+Here we've reimplemented the cat function.
+This exercise has allowed us to see different notions:
 1. Interactions with the **file system**.
 2. Permissions and the **chmod** **command**.
 3. Shebang

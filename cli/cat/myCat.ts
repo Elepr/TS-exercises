@@ -1,36 +1,43 @@
-#! /usr/local/bin/ts-node
+#!/usr/bin/env node
 
-import { readFileSync } from "node:fs"
+// Import of all api, we doesn't need type "pocess." after use their. Rest of code is more clear
+import { readFileSync } from "fs"
+import { argv } from "process"
+import { stderr } from "process"
+import { stdout } from "process"
+import { exit } from "process"
 
-if (process.argv.length < 3) {
-	process.stderr.write("myCat: error: You must pass at least one file as parameter\n")
-	process.exit(1)
+/* The two first index content in argv array is, in first, the path using in shebang, and second, the path of the current prog.
+We want just all index after that, cause they're own arguments in this program */
+if (argv.length < 3) {
+	stderr.write("myCat: error: You must pass at least one file as parameter\n")
+	exit(1)
 }
+// If any error is catch, will return the exitCode set at 0 to the end, is a let cause if a error is throw we set this value to 1
+let exitCode = 0
 
-let returnCode = 0
-
-for (const path of process.argv.slice(2)) {
+for (const arg of argv.slice(2)) {
 	try {
-		const content = readFileSync(path, { encoding: "utf8" })
-		process.stdout.write(content)
-	} catch (err: any) {
-		switch (err.code) {
-		case "ENOENT":
-			process.stderr.write(`myCat: ${path}: No such file or directory\n`)
-			break
-		case "EISDIR":
-			process.stderr.write(`myCat: ${path}: Is a directory\n`)
-			break
-		case "EACCES":
-			process.stderr.write(`myCat: ${path}: Permission denied\n`)
-			break
+		const content = readFileSync(arg, { encoding: "utf8" })
+		stdout.write(content)
+	} catch (error: any) {
+		switch (error.code) {
+			case "ENOENT":
+				stderr.write(`MyCat: ${arg}: No such file or directory\n`)
+				break
+			case "EISDIR":
+				stderr.write(`myCat: ${arg}: Is a directory\n`)
+				break
+			case "EACCES":
+				stderr.write(`myCat: ${arg}: Permission denied\n`)
+				break
 
-		default:
-			process.stderr.write(`myCat: ${path}: Unknow error: ${err}\n`)
-			break
+			default:
+				stderr.write(`myCar: ${arg}: Unknow error: ${error}\n`)
+				break
 		}
-		returnCode = 1
+		exitCode = 1
 	}
 }
 
-process.exit(returnCode)
+exit(exitCode)
