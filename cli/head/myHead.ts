@@ -4,64 +4,156 @@ import { argv, exit, stderr, stdout } from "process";
 const fs = require('node:fs');
 const readline = require('node:readline');
 
-const defaultN = 10
-let n = defaultN
+// Default values with no flag
+const defaultLineMode = true
+const defaultCount = 10
+const defaultPrintHeader = false
 
-const regex = /^-n[0-9]+$/
+// Will be modified in processFlags
+let lineMode = defaultLineMode
+let count = defaultCount
+let printHeader = defaultPrintHeader
+let files: string[] = []
 
-for (let i = 0; i < argv.length; i++) {
-    if (argv[i] == "-n") {
-        if (argv[i + 1] != undefined) {
-            stderr.write(`Myhead: invalid number of lines: ${argv[i + 1]}\n`)
-        } else {
-            stderr.write(`Myhead: option requires an argument -- 'n'\n`)
-        }
-        exit(1)
-    }
-    if (regex.test(argv[i])) {
-        n = parseInt(argv[i].slice(2))
-        if (n == 0) exit(0)
-        argv.splice(i, 1)
-    }
-}
-
-if (argv.length < 3) {
-    stderr.write("myHead: error: You must pass at least one file as parameter\n")
-    exit(1)
-}
-
+// Will be modified by main
 let errorCode = 0
 
-async function main() {
-    for (const arg of argv.slice(2)) {
-        try {
-            const fileStream = fs.createReadStream(arg);
-            const rl = readline.createInterface({
-                input: fileStream,
-            })
-            if (argv.length > 3) stdout.write(`==> ${arg} <==\n`)
-            let counter = 0
-            for await (const line of rl) {
-                if (counter < n) {
-                    stdout.write(`${line}\n`);
-                    counter++
+// Additional instructions :
+// - Remove support of -z flag
+// - Explicitly fail on - flag (with an error message saying basically "reading on stdin is not supported")
+// - Add support for `-n <number>` and `-c <number>`
+// - Remove regex for `-n<number` and `-c<number`
+// - No other other global variables than the ones above
+
+function processFlags(): any {
+    let quietMode = false
+    let verboseMode = false
+
+    for (let i = 2; i < argv.length; i++) {
+        if (argv[i].startsWith("-n") || argv[i].startsWith("-c")) {
+            let unified: boolean
+            let number: string
+
+            if (argv[i].length > 2) {
+                unified = true
+                number = argv[i].substring(2)
+            } else {
+                unified = false
+                number = argv[i + 1]
+            }
+            count = parseInt(number)
+
+            if (argv[i].startsWith("-c")) {
+                lineMode = false
+            } else lineMode = defaultLineMode
+
+            if (isNaN(count)) {
+                if (number == undefined) {
+                    stderr.write(`Myhead: option requires an argument -- '${argv[i].slice(1)}'\nTry 'myHead --help' for more information.\n`)
                 } else {
+                    if (argv[i].startsWith("-c")) {
+                        stderr.write(`myHead: invalid number of bytes: ‘${number}’\nTry 'myHead --help' for more information.\n`)
+                    } else if (argv[i].startsWith("-n")) {
+                        stderr.write(`Myhead: invalid number of lines: '${number}'\nTry 'myHead --help' for more information.\n`)
+                    }
+                }
+                exit(1)
+            }
+
+            if (!unified) { i++ }
+        } else {
+            // Process flags from from argv
+            // Append file to files
+            switch (argv[i]) {
+                case "-q":
+                    quietMode = true
                     break
+                case "-v":
+                    verboseMode = true
+                    break
+                case "--help":
+                    const help = fs.readFileSync("help.txt", { encoding: "utf8" })
+                    stdout.write(`${help}\n`)
+                    exit(0)
+                case "--version":
+                    const version = fs.readFileSync("version.txt", { encoding: "utf8" })
+                    stdout.write(`${version}\n`)
+                    exit(0)
+                case "-":
+                    if (argv[i + 1] == "--version") {
+                        const version = fs.readFileSync("version.txt", { encoding: "utf8" })
+                        stdout.write(`${version}\n`)
+                    } else if (argv[i + 1] == "--help") {
+                        const help = fs.readFileSync("help.txt", { encoding: "utf8" })
+                        stdout.write(`${help}\n`)
+                    } else {
+                        stderr.write("myHead: error: Read standard input is not supported\nTry 'myHead --help' for more information.\n")
+                        exit(1)
+                    }
+
+                default:
+                    files.push(argv[i])
+                    break;
+            }
+        }
+    }
+
+    if (files.length == 0) {
+        stderr.write("myHead: error: Read standard input is not supported: You must pass at least one file as parameter\nTry 'myHead --help' for more information.\n")
+        exit(1)
+    }
+
+    if (files.length > 1) {
+        printHeader = true
+        if (quietMode) printHeader = defaultPrintHeader
+    } else {
+        printHeader = defaultPrintHeader
+        if (verboseMode) printHeader = true
+    }
+}
+
+async function main() {
+    for (const file of files) {
+        try {
+            if (printHeader) stdout.write(`==> ${file} <==\n`)
+            if (lineMode) {
+                const lineStream = fs.createReadStream(file)
+                const rl = readline.createInterface({
+                    input: lineStream
+                })
+                let printed = 0
+                for await (const line of rl) {
+                    if (printed >= count) break
+                    stdout.write(`${line}\n`)
+                    printed++
+                }
+            } else {
+                const byteStream = fs.createReadStream(file, { start: 0, end: count })
+                const rb = readline.createInterface({
+                    input: byteStream
+                })
+                for await (const chunkOfBytes of rb) {
+                    if (!printHeader) {
+                        stdout.write(`${chunkOfBytes.substring(0, chunkOfBytes.length -1)}`)
+                    } else {
+                        stdout.write(`${chunkOfBytes.substring(0, chunkOfBytes.length -1)}\n`)
+                    }
                 }
             }
+
         } catch (error: any) {
             switch (error.code) {
                 case "ENOENT":
-                    stderr.write(`myHead: cannot open ${arg} for reading: No such file or directory\n`)
+                    stderr.write(`myHead: cannot open ${file} for reading: No such file or directory\n`)
                     break;
                 case "EISDIR":
-                    stderr.write(`myHead: error reading ${arg}: Is a directory\n`)
+                    stderr.write(`myHead: error reading ${file}: Is a directory\n`)
                     break
                 case "EACCES":
-                    stderr.write(`myHead: cannot open ${arg} for reading: Permission denied\n`)
+                    stderr.write(`myHead: cannot open ${file} for reading: Permission denied\n`)
                     break
                 default:
-                    stderr.write(`myHead: ${arg}: Unknow error: ${error}\n`)
+                    stderr.write(`myHead: ${file}: Unknow error: ${error}\n`)
                     break
             }
             errorCode = 1
@@ -69,5 +161,6 @@ async function main() {
     }
     exit(errorCode)
 }
-
+processFlags()
 main()
+

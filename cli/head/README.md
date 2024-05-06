@@ -1,19 +1,19 @@
 # myHead
 ## Introduction
-This repository contains a partial reimplementation of the `head` command, which supports the `-n` flag and multiple file support.
+This repository contains a partial reimplementation of the `head` command, which supports the `-n`, `-c`, `-q`, `-v` `--version` and `--help` flags and multiple file support.
 Two versions are available, one naive and one optimized.
 
 ### Version of the two partial reimplementations of `head`
 
 - 1 **myheadNaive.ts:**
   This version uses the **readFileSync** module of node.js' file system api.
-  The file passed as a parameter is stored in its entirety in a variable, then we display only the first few lines.
+  The file passed as a parameter is stored in its entirety in a variable, then we display only the first few lines, or bytes.
   This method loads the entire file into the ram, which, as we shall see, is relatively slow, and can be very complicated with large files.
 
 - 2 **myHead.ts:**
   This version uses the stream modules of the node.js file system api
   (**createReadStream/readline.createInterface**). The file passed as a
-   parameter is read line by line, which we'll display. The advantage of this
+   parameter is read line by line, or, chunk of bytes, which we'll display. The advantage of this
    method is that it doesn't load the ram with the entire file passed as a parameter,
    which, as we'll see, on the one hand conciderably reduces program execution time,
    and on the other hand avoids overloading the ram during execution, and thus crashing the program on large files.
