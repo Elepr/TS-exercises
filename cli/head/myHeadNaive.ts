@@ -94,7 +94,6 @@ if (files.length > 1) {
 	printHeader = forceHeader == "-v"
 }
 
-
 for (const file of files) {
 	try {
 		const content = readFileSync(file, { encoding: "utf8" })
