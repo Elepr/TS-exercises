@@ -1,8 +1,8 @@
 #!/usr/local/bin/ts-node
 
-import { argv, exit, stderr, stdout } from "process";
-const fs = require('node:fs');
-const readline = require('node:readline');
+import { argv, exit, stderr, stdout } from "process"
+const fs = require('node:fs')
+const readline = require('node:readline')
 
 // Default values with no flag
 const defaultLineMode = true
@@ -25,91 +25,80 @@ let errorCode = 0
 // - Remove regex for `-n<number` and `-c<number`
 // - No other other global variables than the ones above
 
-function processFlags(): any {
-    let quietMode = false
-    let verboseMode = false
+let forceHeader: string = ""
 
-    for (let i = 2; i < argv.length; i++) {
-        if (argv[i].startsWith("-n") || argv[i].startsWith("-c")) {
-            let unified: boolean
-            let number: string
+function printInfo(file: string) {
+    const printed = fs.readFileSync(file, { encoding: "utf8" })
+    stdout.write(`${printed}\n`)
+    exit(0)
+}
 
-            if (argv[i].length > 2) {
-                unified = true
-                number = argv[i].substring(2)
-            } else {
-                unified = false
-                number = argv[i + 1]
-            }
-            count = parseInt(number)
+for (let i = 2; i < argv.length; i++) {
+    if (argv[i].startsWith("-n") || argv[i].startsWith("-c")) {
+        let unified: boolean
+        let number: string
 
-            if (argv[i].startsWith("-c")) {
-                lineMode = false
-            } else lineMode = defaultLineMode
-
-            if (isNaN(count)) {
-                if (number == undefined) {
-                    stderr.write(`Myhead: option requires an argument -- '${argv[i].slice(1)}'\nTry 'myHead --help' for more information.\n`)
-                } else {
-                    if (argv[i].startsWith("-c")) {
-                        stderr.write(`myHead: invalid number of bytes: ‘${number}’\nTry 'myHead --help' for more information.\n`)
-                    } else if (argv[i].startsWith("-n")) {
-                        stderr.write(`Myhead: invalid number of lines: '${number}'\nTry 'myHead --help' for more information.\n`)
-                    }
-                }
-                exit(1)
-            }
-
-            if (!unified) { i++ }
+        if (argv[i].length > 2) {
+            unified = true
+            number = argv[i].substring(2)
         } else {
-            // Process flags from from argv
-            // Append file to files
-            switch (argv[i]) {
-                case "-q":
-                    quietMode = true
-                    break
-                case "-v":
-                    verboseMode = true
-                    break
-                case "--help":
-                    const help = fs.readFileSync("help.txt", { encoding: "utf8" })
-                    stdout.write(`${help}\n`)
-                    exit(0)
-                case "--version":
-                    const version = fs.readFileSync("version.txt", { encoding: "utf8" })
-                    stdout.write(`${version}\n`)
-                    exit(0)
-                case "-":
-                    if (argv[i + 1] == "--version") {
-                        const version = fs.readFileSync("version.txt", { encoding: "utf8" })
-                        stdout.write(`${version}\n`)
-                    } else if (argv[i + 1] == "--help") {
-                        const help = fs.readFileSync("help.txt", { encoding: "utf8" })
-                        stdout.write(`${help}\n`)
-                    } else {
-                        stderr.write("myHead: error: Read standard input is not supported\nTry 'myHead --help' for more information.\n")
-                        exit(1)
-                    }
+            unified = false
+            number = argv[i + 1]
+        }
+        count = parseInt(number)
 
-                default:
-                    files.push(argv[i])
-                    break;
+        if (isNaN(count)) {
+            if (number == undefined) {
+                stderr.write(`Myhead: option requires an argument -- '${argv[i].slice(1)}'\nTry 'myHead --help' for more information.\n`)
+            } else if (argv[i].startsWith("-c")) {
+                stderr.write(`myHead: invalid number of bytes: ‘${number}’\nTry 'myHead --help' for more information.\n`)
+            } else {
+                stderr.write(`Myhead: invalid number of lines: '${number}'\nTry 'myHead --help' for more information.\n`)
             }
+            exit(1)
+        }
+        argv[i].startsWith("-c") ? lineMode = false : lineMode = true
+        if (!unified) { i++ }
+    } else {
+        // Process flags from from argv
+        // Append file to files
+        switch (argv[i]) {
+            case "-q":
+                forceHeader = "-q"
+                break
+            case "-v":
+                forceHeader = "-v"
+                break
+            case "--help":
+                printInfo("help.txt")
+            case "--version":
+                printInfo("version.txt")
+            case "-":
+                if (argv[i + 1] == "--help") {
+                    printInfo("help.txt")
+                } else if (argv[i + 1] == "--version") {
+                    printInfo("version.txt")
+                } else {
+                    stderr.write("myHead: error: Read standard input is not supported\nTry 'myHead --help' for more information.\n")
+                    exit(1)
+                }
+
+            default:
+                files.push(argv[i])
+                break;
         }
     }
+}
 
-    if (files.length == 0) {
-        stderr.write("myHead: error: Read standard input is not supported: You must pass at least one file as parameter\nTry 'myHead --help' for more information.\n")
-        exit(1)
-    }
+if (files.length == 0) {
+    stderr.write("myHead: error: Read standard input is not supported: You must pass at least one file as parameter\nTry 'myHead --help' for more information.\n")
+    exit(1)
+}
 
-    if (files.length > 1) {
-        printHeader = true
-        if (quietMode) printHeader = defaultPrintHeader
-    } else {
-        printHeader = defaultPrintHeader
-        if (verboseMode) printHeader = true
-    }
+if (files.length > 1) {
+    forceHeader == "-q" ? printHeader = false : printHeader = true
+} else {
+    forceHeader == "-v" ? printHeader = true : printHeader = false
 }
 
 async function main() {
@@ -128,17 +117,13 @@ async function main() {
                     printed++
                 }
             } else {
-                const byteStream = fs.createReadStream(file, { start: 0, end: count })
-                const rb = readline.createInterface({
-                    input: byteStream
-                })
-                for await (const chunkOfBytes of rb) {
-                    if (!printHeader) {
-                        stdout.write(`${chunkOfBytes.substring(0, chunkOfBytes.length -1)}`)
-                    } else {
-                        stdout.write(`${chunkOfBytes.substring(0, chunkOfBytes.length -1)}\n`)
-                    }
+                const byteStream = fs.createReadStream(file, { highWaterMark: count })
+                for await (const chunkOfByte of byteStream) {
+                    stdout.write(chunkOfByte)
+                    break
                 }
+                if (printHeader && files.length > 1)
+                    stdout.write("\n")
             }
 
         } catch (error: any) {
@@ -161,6 +146,5 @@ async function main() {
     }
     exit(errorCode)
 }
-processFlags()
 main()
 
