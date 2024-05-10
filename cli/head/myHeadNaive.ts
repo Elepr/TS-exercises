@@ -43,11 +43,11 @@ for (let i = 2; i < argv.length; i++) {
 
 		if (isNaN(count)) {
 			if (number == undefined) {
-				stderr.write(`Myhead: option requires an argument -- '${argv[i].slice(1)}'\nTry 'myHead --help' for more information.\n`)
+				stderr.write(`Myhead: option requires an argument -- '${argv[i].slice(1)}'\nTry 'myHeadNaive --help' for more information.\n`)
 			} else if (argv[i].startsWith("-c")) {
-				stderr.write(`myHead: invalid number of bytes: ‘${number}’\nTry 'myHead --help' for more information.\n`)
+				stderr.write(`myHead: invalid number of bytes: ‘${number}’\nTry 'myHeadNaive --help' for more information.\n`)
 			} else {
-				stderr.write(`Myhead: invalid number of lines: '${number}'\nTry 'myHead --help' for more information.\n`)
+				stderr.write(`Myhead: invalid number of lines: '${number}'\nTry 'myHeadNaive --help' for more information.\n`)
 			}
 			exit(1)
 		}
@@ -73,7 +73,7 @@ for (let i = 2; i < argv.length; i++) {
 				} else if (argv[i + 1] == "--version") {
 					printInfo("version.txt")
 				} else {
-					stderr.write("myHead: error: Read standard input is not supported\nTry 'myHead --help' for more information.\n")
+					stderr.write("myHeadNaive: error: Read standard input is not supported\nTry 'myHeadNaive --help' for more information.\n")
 					exit(1)
 				}
 
@@ -85,7 +85,7 @@ for (let i = 2; i < argv.length; i++) {
 }
 
 if (files.length == 0) {
-	stderr.write("myHead: error: Read standard input is not supported: You must pass at least one file as parameter\nTry 'myHead --help' for more information.\n")
+	stderr.write("myHeadNaive: error: Read standard input is not supported: You must pass at least one file as parameter\nTry 'myHeadNaive --help' for more information.\n")
 	exit(1)
 }
 
@@ -116,17 +116,17 @@ for (const file of files) {
 	} catch (error: any) {
 		switch (error.code) {
 			case "ENOENT":
-				stderr.write(`myHead: cannot open ${file} for reading: No such file or directory\n`)
+				stderr.write(`myHeadNaive: cannot open ${file} for reading: No such file or directory\n`)
 				break
 			case "EISDIR":
-				stderr.write(`myHead: error reading ${file}: Is a directory\n`)
+				stderr.write(`myHeadNaive: error reading ${file}: Is a directory\n`)
 				break
 			case "EACCES":
-				stderr.write(`myHead: cannot open ${file} for reading: Permission denied\n`)
+				stderr.write(`myHeadNaive: cannot open ${file} for reading: Permission denied\n`)
 				break
 
 			default:
-				stderr.write(`myHead: ${file}: Unknow error: ${error}\n`)
+				stderr.write(`myHeadNaive ${file}: Unknow error: ${error}\n`)
 				break
 		}
 		errorCode = 1
