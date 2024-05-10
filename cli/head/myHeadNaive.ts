@@ -4,62 +4,132 @@
 import { readFileSync } from "fs"
 import { argv, stderr, stdout, exit } from "process"
 
-const defaultN = 10
-let n = defaultN
+const defaultLineMode = true
+const defaultCount = 10
+const defaultPrintHeader = false
 
-const regex = /^-n[0-9]+$/
+// Will be modified in processFlags
+let lineMode = defaultLineMode
+let count = defaultCount
+let printHeader = defaultPrintHeader
+let files: string[] = []
 
-for (let i = 0; i < argv.length; i++) {
-	if (argv[i] == "-n") {
-		if (argv[i + 1] != undefined) {
-			stderr.write(`Myhead: invalid number of lines: ${argv[i + 1]}\n`)
+// Will be modified by main
+let errorCode = 0
+let forceHeader: string = ""
+
+function printInfo(file: string) {
+	const printed = readFileSync(file, { encoding: "utf8" })
+	stdout.write(`${printed}\n`)
+	exit(0)
+}
+
+for (let i = 2; i < argv.length; i++) {
+	if (argv[i].startsWith("-n") || argv[i].startsWith("-c")) {
+
+		argv[i].startsWith("-c") ? lineMode = false : lineMode = true
+
+		let unified: boolean
+		let number: string
+
+		if (argv[i].length > 2) {
+			unified = true
+			number = argv[i].substring(2)
 		} else {
-			stderr.write(`Myhead: option requires an argument -- 'n'\n`)
+			unified = false
+			number = argv[i + 1]
 		}
-		exit(1)
-	}
-	if (regex.test(argv[i])) {
-		n = parseInt(argv[i].slice(2))
-		if (n == 0) exit(0)
-		argv.splice(i, 1)
+		count = parseInt(number)
+
+		if (isNaN(count)) {
+			if (number == undefined) {
+				stderr.write(`Myhead: option requires an argument -- '${argv[i].slice(1)}'\nTry 'myHead --help' for more information.\n`)
+			} else if (argv[i].startsWith("-c")) {
+				stderr.write(`myHead: invalid number of bytes: ‘${number}’\nTry 'myHead --help' for more information.\n`)
+			} else {
+				stderr.write(`Myhead: invalid number of lines: '${number}'\nTry 'myHead --help' for more information.\n`)
+			}
+			exit(1)
+		}
+
+		if (!unified) { i++ }
+	} else {
+		// Process flags from from argv
+		// Append file to files
+		switch (argv[i]) {
+			case "-q":
+				forceHeader = "-q"
+				break
+			case "-v":
+				forceHeader = "-v"
+				break
+			case "--help":
+				printInfo("help.txt")
+			case "--version":
+				printInfo("version.txt")
+			case "-":
+				if (argv[i + 1] == "--help") {
+					printInfo("help.txt")
+				} else if (argv[i + 1] == "--version") {
+					printInfo("version.txt")
+				} else {
+					stderr.write("myHead: error: Read standard input is not supported\nTry 'myHead --help' for more information.\n")
+					exit(1)
+				}
+
+			default:
+				files.push(argv[i])
+				break;
+		}
 	}
 }
 
-/* The two first index content in argv array is, in first, the path using in shebang, and second, the path of the current prog.
-We want just all index after that, cause they're own arguments in this program */
-if (argv.length < 3) {
-	stderr.write("myHead: error: You must pass at least one file as parameter\n")
+if (files.length == 0) {
+	stderr.write("myHead: error: Read standard input is not supported: You must pass at least one file as parameter\nTry 'myHead --help' for more information.\n")
 	exit(1)
 }
-// If any error is catch, will return the exitCode set at 0 to the end, is a let cause if a error is throw we set this value to 1
-let exitCode = 0
 
-for (const arg of argv.slice(2)) {
+if (files.length > 1) {
+	forceHeader == "-q" ? printHeader = false : printHeader = true
+} else {
+	forceHeader == "-v" ? printHeader = true : printHeader = false
+}
+
+
+for (const file of files) {
 	try {
-		const content = readFileSync(arg, { encoding: "utf8" })
-		const lines = content.split("\n")
-		if (argv.length > 3) stdout.write(`==> ${arg} <==\n`)
-		for (let i = 0; i < n; i++) {
-			stdout.write(`${lines[i]}\n`)
+		const content = readFileSync(file, { encoding: "utf8" })
+		if (printHeader) stdout.write(`==> ${file} <==\n`)
+		if (lineMode) {
+			const lines = content.split("\n")
+			for (let i = 0; i < count; i++) {
+				stdout.write(`${lines[i]}\n`)
+			}
+			stdout.write(`${content}\n`)
+		} else {
+			for (let i = 0; i < count; i++) {
+				stdout.write(content[i])
+			}
+			if (printHeader && files.length > 1)
+				stdout.write("\n")
 		}
 	} catch (error: any) {
 		switch (error.code) {
 			case "ENOENT":
-				stderr.write(`myHead: cannot open ${arg} for reading: No such file or directory\n`)
+				stderr.write(`myHead: cannot open ${file} for reading: No such file or directory\n`)
 				break
 			case "EISDIR":
-				stderr.write(`myHead: error reading ${arg}: Is a directory\n`)
+				stderr.write(`myHead: error reading ${file}: Is a directory\n`)
 				break
 			case "EACCES":
-				stderr.write(`myHead: cannot open ${arg} for reading: Permission denied\n`)
+				stderr.write(`myHead: cannot open ${file} for reading: Permission denied\n`)
 				break
 
 			default:
-				stderr.write(`myHead: ${arg}: Unknow error: ${error}\n`)
+				stderr.write(`myHead: ${file}: Unknow error: ${error}\n`)
 				break
 		}
-		exitCode = 1
+		errorCode = 1
 	}
 }
-
-exit(exitCode)
+exit(errorCode)
