@@ -18,14 +18,7 @@ let files: string[] = []
 // Will be modified by main
 let errorCode = 0
 
-// Additional instructions :
-// - Remove support of -z flag
-// - Explicitly fail on - flag (with an error message saying basically "reading on stdin is not supported")
-// - Add support for `-n <number>` and `-c <number>`
-// - Remove regex for `-n<number` and `-c<number`
-// - No other other global variables than the ones above
-
-let forceHeader: string = ""
+let forceHeader = ""
 
 function printInfo(file: string) {
     const printed = fs.readFileSync(file, { encoding: "utf8" })
@@ -57,7 +50,7 @@ for (let i = 2; i < argv.length; i++) {
             }
             exit(1)
         }
-        argv[i].startsWith("-c") ? lineMode = false : lineMode = true
+        lineMode = argv[i].startsWith("-c") ? false : true
         if (!unified) { i++ }
     } else {
         // Process flags from from argv
@@ -85,7 +78,6 @@ for (let i = 2; i < argv.length; i++) {
 
             default:
                 files.push(argv[i])
-                break;
         }
     }
 }
@@ -96,9 +88,9 @@ if (files.length == 0) {
 }
 
 if (files.length > 1) {
-    forceHeader == "-q" ? printHeader = false : printHeader = true
+    printHeader = forceHeader != "-q"
 } else {
-    forceHeader == "-v" ? printHeader = true : printHeader = false
+    printHeader = forceHeader == "-v"
 }
 
 async function main() {
@@ -147,4 +139,3 @@ async function main() {
     exit(errorCode)
 }
 main()
-
