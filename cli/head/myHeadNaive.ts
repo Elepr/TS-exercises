@@ -27,7 +27,7 @@ function printInfo(file: string) {
 for (let i = 2; i < argv.length; i++) {
 	if (argv[i].startsWith("-n") || argv[i].startsWith("-c")) {
 
-		argv[i].startsWith("-c") ? lineMode = false : lineMode = true
+		lineMode = argv[i].startsWith("-c") ? false : true
 
 		let unified: boolean
 		let number: string
@@ -79,7 +79,6 @@ for (let i = 2; i < argv.length; i++) {
 
 			default:
 				files.push(argv[i])
-				break;
 		}
 	}
 }
@@ -90,9 +89,9 @@ if (files.length == 0) {
 }
 
 if (files.length > 1) {
-	forceHeader == "-q" ? printHeader = false : printHeader = true
+	printHeader = forceHeader != "-q"
 } else {
-	forceHeader == "-v" ? printHeader = true : printHeader = false
+	printHeader = forceHeader == "-v"
 }
 
 
