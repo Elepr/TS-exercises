@@ -42,11 +42,11 @@ for (let i = 2; i < argv.length; i++) {
 
         if (isNaN(count)) {
             if (number == undefined) {
-                stderr.write(`Myhead: option requires an argument -- '${argv[i].slice(1)}'\nTry 'myHead --help' for more information.\n`)
+                stderr.write(`myHead: option requires an argument -- '${argv[i].slice(1)}'\nTry 'myHead --help' for more information.\n`)
             } else if (argv[i].startsWith("-c")) {
                 stderr.write(`myHead: invalid number of bytes: ‘${number}’\nTry 'myHead --help' for more information.\n`)
             } else {
-                stderr.write(`Myhead: invalid number of lines: '${number}'\nTry 'myHead --help' for more information.\n`)
+                stderr.write(`myHead: invalid number of lines: '${number}'\nTry 'myHead --help' for more information.\n`)
             }
             exit(1)
         }
