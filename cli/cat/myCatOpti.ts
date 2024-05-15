@@ -7,8 +7,8 @@ const fs = require('node:fs')
 const readline = require('node:readline')
 /* The two first index content in argv array is, in first, the path using in shebang, and second, the path of the current prog.
 We want just all index after that, cause they're own arguments in this program */
-if (argv.length < 3) {
-    stderr.write("myCat: error: You must pass at least one file as parameter\n")
+if (argv.length <= 2) {
+    stderr.write("myCat: error: Read standard input is not supported: You must pass at least one file as parameter\n")
     exit(1)
 }
 // If any error is catch, will return the exitCode set at 0 to the end, is a let cause if a error is throw we set this value to 1
